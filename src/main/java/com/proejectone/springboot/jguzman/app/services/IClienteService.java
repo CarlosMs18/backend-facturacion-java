@@ -1,6 +1,7 @@
 package com.proejectone.springboot.jguzman.app.services;
 
 import com.proejectone.springboot.jguzman.app.models.Cliente;
+import com.proejectone.springboot.jguzman.app.models.Factura;
 import com.proejectone.springboot.jguzman.app.models.Producto;
 import com.proejectone.springboot.jguzman.app.models.Region;
 import org.springframework.http.ResponseEntity;
@@ -18,4 +19,9 @@ public interface IClienteService {
     public ResponseEntity<?> update(Cliente cliente, Long clienteId);
 
     public ResponseEntity<?> delete(Long id);
+
+
+    //SERVICIOS PARA PODER REALIZAR OPERACIONES CON EL MODELO FACTURA
+
+    public Factura findFacturaById(Long clienteId);
 }

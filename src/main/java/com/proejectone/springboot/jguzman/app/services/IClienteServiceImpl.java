@@ -2,8 +2,10 @@ package com.proejectone.springboot.jguzman.app.services;
 
 import ch.qos.logback.core.net.server.Client;
 import com.proejectone.springboot.jguzman.app.dao.ClienteDao;
+import com.proejectone.springboot.jguzman.app.dao.FacturaDao;
 import com.proejectone.springboot.jguzman.app.dao.RegionDao;
 import com.proejectone.springboot.jguzman.app.models.Cliente;
+import com.proejectone.springboot.jguzman.app.models.Factura;
 import com.proejectone.springboot.jguzman.app.models.Producto;
 import com.proejectone.springboot.jguzman.app.models.Region;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class IClienteServiceImpl implements IClienteService{
     @Autowired
     private ClienteDao clienteDao;
 
+
+    @Autowired
+    private FacturaDao facturaDao;
 
     @Autowired
     private RegionDao regionDao;
@@ -157,5 +162,11 @@ public class IClienteServiceImpl implements IClienteService{
         }
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Factura findFacturaById(Long clienteId) {
+        return facturaDao.findById(clienteId).orElse(null);
     }
 }
