@@ -72,4 +72,11 @@ public class ClienteController {
         ResponseEntity<?> response = clienteService.update(cliente,clienteId);
         return response;
     }
+
+
+    @DeleteMapping("/clientes/{clienteId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long clienteId){
+        ResponseEntity<?> response = clienteService.delete(clienteId);
+        return response;
+    }
 }

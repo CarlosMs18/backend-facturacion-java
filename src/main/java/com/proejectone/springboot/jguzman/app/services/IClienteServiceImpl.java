@@ -138,6 +138,24 @@ public class IClienteServiceImpl implements IClienteService{
     @Override
     @Transactional
     public ResponseEntity<?> delete(Long id) {
-        return null;
+        Optional<Cliente> clienteDb = null;
+        Map<String, Object> response = new HashMap<>();
+        try{
+            clienteDb = clienteDao.findById(id);
+            if(clienteDb.isEmpty()){
+                response.put("mensaje","No se encuentra el cliente por el id ".concat(": ").concat(id.toString()));
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+            }else{
+                clienteDao.deleteById(id);
+                response.put("mensaje", "Cliente eliminado con exito");
+
+            }
+        }catch (DataAccessException e){
+            response.put("mensaje","Error al eliminar el cliente en la basem de datos");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
     }
 }
