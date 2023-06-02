@@ -10,15 +10,14 @@ import com.proejectone.springboot.jguzman.app.models.Producto;
 import com.proejectone.springboot.jguzman.app.models.Region;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IClienteServiceImpl implements IClienteService{
@@ -38,6 +37,12 @@ public class IClienteServiceImpl implements IClienteService{
     public List<Cliente> findAll() {
 
         return clienteDao.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Cliente> findAll(Pageable pageable) {
+        return clienteDao.findAll(pageable);
     }
 
     @Override
@@ -67,30 +72,36 @@ public class IClienteServiceImpl implements IClienteService{
     @Transactional
     public ResponseEntity<?> save(Cliente cliente) {
         Cliente clienteSaved = null;
+        System.out.println("1");
         Map<String, Object> response = new HashMap<>();
         try {
             Optional<Region> regionDb = regionDao.findById(cliente.getRegion().getId());
             if(regionDb.isPresent()){
                 cliente.setRegion(regionDb.get());
+                System.out.println("2");
             }else{
                 response.put("mensaje","Region no encontrado con el id ".concat(" : ").concat(cliente.getRegion().getId().toString()));
+                System.out.println("3");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+
             }
 
             clienteSaved = clienteDao.save(cliente);
+            System.out.println("4");
             if(clienteSaved == null){
                 response.put("mensaje","Error al guardar el cliente");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
 
         }catch (DataAccessException e){
+            System.out.println("5");
             response.put("mensaje","Error al consultar la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        System.out.println("6");
         response.put("mensaje","El cliente fue creado con exito!");
-        response.put("cliente creado",clienteSaved);
+        response.put("cliente_creado",clienteSaved);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
@@ -100,6 +111,8 @@ public class IClienteServiceImpl implements IClienteService{
         Optional<Cliente> clientetDb = null;
         Map<String, Object> response = new HashMap<>();
         try{
+
+
 
            Optional<Region> regionDb = regionDao.findById(cliente.getRegion().getId());
             if(regionDb.isPresent()){
@@ -111,6 +124,18 @@ public class IClienteServiceImpl implements IClienteService{
 
             clientetDb = clienteDao.findById(clienteId);
             if(clientetDb.isPresent()){
+                System.out.println(cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()));
+                System.out.println(!cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()));
+                System.out.println(clienteDao.porEmail(cliente.getEmail()).isPresent());
+                if (!cliente.getEmail().isEmpty() &&
+                        !cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()) &&
+                        clienteDao.porEmail(cliente.getEmail()).isPresent()) {
+                    return ResponseEntity.badRequest()
+                            .body(Collections
+                                    .singletonMap("mensaje", "Ya existe un usuario con ese correo electronico!"));
+                }
+
+
                 clientetDb.get().setNombre(cliente.getNombre());
                 clientetDb.get().setApellido(cliente.getApellido());
                 clientetDb.get().setEmail(cliente.getEmail());
@@ -120,7 +145,7 @@ public class IClienteServiceImpl implements IClienteService{
                 Cliente clienteUpdated = clienteDao.save(clientetDb.get());
                 if(clienteUpdated != null){
                     response.put("mensaje","cliente actualizado con exito!");
-                    response.put("cliente actualizado",clienteUpdated);
+                    response.put("cliente_actualizado",clienteUpdated);
 
                 }else{
                     response.put("mensaje","cliente no actualizado");
@@ -162,6 +187,16 @@ public class IClienteServiceImpl implements IClienteService{
         }
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public boolean existePorEmail(String email) {
+        return clienteDao.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<Cliente> porEmail(String email) {
+        return clienteDao.porEmail(email);
     }
 
     @Override

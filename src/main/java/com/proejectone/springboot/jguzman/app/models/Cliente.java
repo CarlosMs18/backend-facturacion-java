@@ -23,7 +23,7 @@ public class Cliente implements Serializable {
 
     @NotEmpty(message = "el nombre no puede ser vacio")
     @Size(min = 4 , max = 12 , message = "el tamaño del nombre debe de ser entre 4 - 12 caracteres")
-
+    @Column(nullable = false)
     private String nombre;
 
     @NotEmpty(message = "el nombre no puede ser vacio")

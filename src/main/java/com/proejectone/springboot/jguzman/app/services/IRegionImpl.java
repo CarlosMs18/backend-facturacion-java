@@ -50,16 +50,19 @@ public class IRegionImpl implements IRegionService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> save(Region region) {
         return null;
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> update(Region region) {
         return null;
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> delete(Long id) {
         return null;
     }
