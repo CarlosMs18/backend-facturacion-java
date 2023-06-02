@@ -40,6 +40,12 @@ public class IClienteServiceImpl implements IClienteService{
     }
 
     @Override
+
+    public List<Cliente> searchByCliente(String name) {
+        return clienteDao.findByNameLike(name);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<Cliente> findAll(Pageable pageable) {
         return clienteDao.findAll(pageable);

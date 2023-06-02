@@ -44,12 +44,20 @@ public class ClienteController {
         return clienteService.findAll(pageable);
     }
 
+    @GetMapping("/clientes/filter/{name}")
+    public List<Cliente> findByClienteName(@PathVariable String name){
+        List<Cliente> response = clienteService.searchByCliente(name);
+        return response;
+    }
 
     @GetMapping("/clientes/{id}")
     public ResponseEntity findById(@PathVariable Long id){
         ResponseEntity<?> response = clienteService.findById(id);
         return response;
     }
+
+
+
 
     @PostMapping("/clientes")
     public ResponseEntity<?> saveCliente(@Valid @RequestBody Cliente cliente, BindingResult result){

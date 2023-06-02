@@ -15,6 +15,7 @@ public interface IClienteService {
 
     public List<Cliente> findAll();
 
+    public List<Cliente> searchByCliente(String name);
 
     public Page<Cliente> findAll(Pageable pageable);
 
