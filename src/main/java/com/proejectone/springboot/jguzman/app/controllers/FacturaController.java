@@ -15,8 +15,10 @@ public class FacturaController {
     @Autowired
     private IClienteService clienteService;
 
-    @GetMapping("/facturas/{clienteId}")
-    public Factura showFacturasbyCliente(@PathVariable Long clienteId){
-        return clienteService.findFacturaById(clienteId);
+    @GetMapping("/facturas/{id}")
+    public Factura showFacturasbyCliente(@PathVariable Long id){
+        return clienteService.findFacturaById(id);
     }
+
+
 }

@@ -1,24 +1,28 @@
 package com.proejectone.springboot.jguzman.app.controllers;
 
 
+import com.proejectone.springboot.jguzman.app.dao.ClienteDao;
 import com.proejectone.springboot.jguzman.app.models.Cliente;
 import com.proejectone.springboot.jguzman.app.models.Producto;
 import com.proejectone.springboot.jguzman.app.models.Region;
 import com.proejectone.springboot.jguzman.app.services.IClienteService;
+import com.proejectone.springboot.jguzman.app.services.IUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -30,6 +34,12 @@ public class ClienteController {
     @Autowired
     private IClienteService clienteService;
 
+
+    @Autowired
+    private IUploadService uploadService;
+
+    @Autowired
+    private ClienteDao clienteDao;
 
     @GetMapping("/clientes")
     public List<Cliente> findAll(){
@@ -110,6 +120,55 @@ public class ClienteController {
 
         ResponseEntity<?> response = clienteService.update(cliente,clienteId);
         return response;
+    }
+
+
+    @PostMapping("/clientes/upload")
+    public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id){
+        Map<String,Object> response = new HashMap<>();
+        Optional<Cliente> cliente = clienteDao.findById(id);
+
+        if(cliente.isEmpty()){
+
+            response.put("error","No se encuentra el usuario con el Identificador :".concat(id.toString()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }
+
+        if(!archivo.isEmpty()){
+            String nombreArchivo = null;
+            try {
+                nombreArchivo = uploadService.nombrarFoto(archivo);
+            }catch (IOException e){
+                response.put("mensaje","Error al subir la imagen del cliente");
+                return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+
+            }
+
+            String nombreAnterior = cliente.get().getFoto();
+            uploadService.eliminarFoto(nombreAnterior);
+
+            cliente.get().setFoto(nombreArchivo);
+            clienteService.save(cliente.get());
+            response.put("mensaje","Has subido correctamente la imagen : " + nombreArchivo);
+            response.put("cliente",cliente);
+
+        }
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/clientes/upload/img/{nombreFoto:.+}")
+    public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
+        Resource recurso = null;
+
+        try{
+            recurso = uploadService.verFoto(nombreFoto);
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+
+        HttpHeaders cabecera = new HttpHeaders();
+        cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
+        return new ResponseEntity<Resource>(recurso,cabecera, HttpStatus.OK);
     }
 
 
