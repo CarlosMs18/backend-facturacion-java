@@ -36,8 +36,37 @@ INSERT INTO clientes( nombre, apellido, email, create_at, region_id) VALUES ("ca
 INSERT INTO clientes( nombre, apellido, email, create_at, region_id) VALUES ("carlos29","melgarejo5","a29@gmail.com","2022-06-09",3)
 INSERT INTO clientes( nombre, apellido, email, create_at, region_id) VALUES ("carlos30","melgarejo6","a30@gmail.com","2022-06-09",1)
 
+INSERT INTO productos (nombre, precio, create_at) VALUES('Panasonic Pantalla LCD', 259990, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Sony Camara digl DSC-W320B', 123490, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Apple iPod shuffle', 1499990, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Sony Notebook Z110', 37990, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Hewlett Packard Mult2280', 69990, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Bianchi Bicicleta Aro 26', 69990, NOW());
+INSERT INTO productos (nombre, precio, create_at) VALUES('Mica Comoda 5 Cajones', 299990, NOW());
+
+
 
 //FACTURAS
 INSERT INTO facturas(descripcion, observacion, create_at, cliente_id) VALUES("descripcion1","obserevacion1","2022-06-08",1)
 INSERT INTO facturas(descripcion, observacion, create_at, cliente_id) VALUES("descripcion2","obserevacion2","2022-06-08",1)
 INSERT INTO facturas(descripcion, observacion, create_at, cliente_id) VALUES("descripcion3","obserevacion3","2022-06-08",2)
+
+//FACTURA ITEMS
+
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 1, 1);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(2, 1, 4);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 1, 5);
+
+
+
+
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 2, 1);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(2, 2, 4);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 2, 5);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 2, 7);
+
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 3, 5);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 3, 7);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 3, 5);
+INSERT INTO factura_items (cantidad, factura_id, producto_id) VALUES(1, 3, 7);
+

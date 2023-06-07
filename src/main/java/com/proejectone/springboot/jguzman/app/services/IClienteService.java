@@ -23,6 +23,9 @@ public interface IClienteService {
 
     public ResponseEntity<?> save(Cliente cliente);
 
+    public ResponseEntity<?> saveFactura(Factura factura);
+
+
     public ResponseEntity<?> update(Cliente cliente, Long clienteId);
 
     public ResponseEntity<?> delete(Long id);
@@ -35,4 +38,13 @@ public interface IClienteService {
     //SERVICIOS PARA PODER REALIZAR OPERACIONES CON EL MODELO FACTURA
 
     public Factura findFacturaById(Long clienteId);
+
+
+    //public Factura saveFactura(Factura factura);
+
+    public void deleteFacturaById(Long id);
+
+
+    //SERVICIO PARA FILTRAR PRODUCTO
+    public List<Producto> findProductoByNombre(String termino);
 }

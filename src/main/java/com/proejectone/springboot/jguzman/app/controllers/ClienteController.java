@@ -71,10 +71,10 @@ public class ClienteController {
 
     @PostMapping("/clientes")
     public ResponseEntity<?> saveCliente(@Valid @RequestBody Cliente cliente, BindingResult result){
-        System.out.println("reee");
+
         Map<String, Object> errors = new HashMap<>();
         if(result.hasErrors()){
-            System.out.println("aca!");
+
             List<String> errores = result.getFieldErrors()
                     .stream()
                     .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
@@ -89,7 +89,7 @@ public class ClienteController {
                     .body(Collections
                             .singletonMap("mensaje", "Ya existe un usuario con ese correo electronico!"));
         }
-        System.out.println("reeei");
+
         ResponseEntity<?> response = clienteService.save(cliente);
         return response;
     }
@@ -99,7 +99,7 @@ public class ClienteController {
     public ResponseEntity<?>  updateCliente(@Valid @RequestBody Cliente cliente, BindingResult result, @PathVariable Long clienteId){
         Map<String, Object> errors = new HashMap<>();
         if(result.hasErrors()){
-            System.out.println("aca!");
+
             List<String> errores = result.getFieldErrors()
                     .stream()
                     .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())

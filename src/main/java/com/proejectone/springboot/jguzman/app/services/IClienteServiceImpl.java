@@ -3,6 +3,7 @@ package com.proejectone.springboot.jguzman.app.services;
 import ch.qos.logback.core.net.server.Client;
 import com.proejectone.springboot.jguzman.app.dao.ClienteDao;
 import com.proejectone.springboot.jguzman.app.dao.FacturaDao;
+import com.proejectone.springboot.jguzman.app.dao.ProductoDao;
 import com.proejectone.springboot.jguzman.app.dao.RegionDao;
 import com.proejectone.springboot.jguzman.app.models.Cliente;
 import com.proejectone.springboot.jguzman.app.models.Factura;
@@ -31,6 +32,10 @@ public class IClienteServiceImpl implements IClienteService{
 
     @Autowired
     private RegionDao regionDao;
+
+
+    @Autowired
+    private ProductoDao productoDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -78,37 +83,56 @@ public class IClienteServiceImpl implements IClienteService{
     @Transactional
     public ResponseEntity<?> save(Cliente cliente) {
         Cliente clienteSaved = null;
-        System.out.println("1");
+
         Map<String, Object> response = new HashMap<>();
         try {
             Optional<Region> regionDb = regionDao.findById(cliente.getRegion().getId());
             if(regionDb.isPresent()){
                 cliente.setRegion(regionDb.get());
-                System.out.println("2");
+
             }else{
                 response.put("mensaje","Region no encontrado con el id ".concat(" : ").concat(cliente.getRegion().getId().toString()));
-                System.out.println("3");
+
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 
             }
 
             clienteSaved = clienteDao.save(cliente);
-            System.out.println("4");
+
             if(clienteSaved == null){
                 response.put("mensaje","Error al guardar el cliente");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
 
         }catch (DataAccessException e){
-            System.out.println("5");
+
             response.put("mensaje","Error al consultar la base de datos");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        System.out.println("6");
+
         response.put("mensaje","El cliente fue creado con exito!");
         response.put("cliente_creado",clienteSaved);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<?> saveFactura(Factura factura) {
+        Factura facturaSaved = null;
+        Map<String, Object> response = new HashMap<>();
+        try{
+            facturaSaved = facturaDao.save(factura);
+            if(facturaSaved == null){
+                response.put("mensaje","Error al guardar la factura");
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+            }
+        }catch (DataAccessException e){
+
+            response.put("mensaje","Error al consultar la base de datos");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return null;
     }
 
     @Override
@@ -130,9 +154,7 @@ public class IClienteServiceImpl implements IClienteService{
 
             clientetDb = clienteDao.findById(clienteId);
             if(clientetDb.isPresent()){
-                System.out.println(cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()));
-                System.out.println(!cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()));
-                System.out.println(clienteDao.porEmail(cliente.getEmail()).isPresent());
+
                 if (!cliente.getEmail().isEmpty() &&
                         !cliente.getEmail().equalsIgnoreCase(clientetDb.get().getEmail()) &&
                         clienteDao.porEmail(cliente.getEmail()).isPresent()) {
@@ -209,5 +231,24 @@ public class IClienteServiceImpl implements IClienteService{
     @Transactional(readOnly = true)
     public Factura findFacturaById(Long clienteId) {
         return facturaDao.findById(clienteId).orElse(null);
+    }
+
+    /*
+      @Override
+    public Factura saveFactura(Factura factura) {
+        return facturaDao.save(factura);
+    }
+     */
+
+
+
+    @Override
+    public void deleteFacturaById(Long id) {
+        facturaDao.deleteById(id);
+    }
+
+    @Override
+    public List<Producto> findProductoByNombre(String termino) {
+        return productoDao.findByNombreContainingIgnoreCase(termino);
     }
 }

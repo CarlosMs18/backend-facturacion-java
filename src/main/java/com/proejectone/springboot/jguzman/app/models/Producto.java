@@ -16,7 +16,7 @@ public class Producto implements Serializable {
     private Long id;
 
     @NotEmpty(message = "el nombre no puede ser vacio")
-    @Size(min = 4 , max = 15 , message = "el tamaño del nombre debe de ser entre 4 - 12 caracteres")
+    @Size(min = 4 , max = 30 , message = "el tamaño del nombre debe de ser entre 4 - 12 caracteres")
 
     private String nombre;
 
@@ -60,6 +60,7 @@ public class Producto implements Serializable {
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
+
 
 
     private static final long serialVersionUID = 1L;

@@ -40,7 +40,7 @@ public class ProductoController {
     public ResponseEntity<?> saveProduct(@Valid @RequestBody Producto product, BindingResult result){
                 Map<String, Object> errors = new HashMap<>();
                 if(result.hasErrors()){
-                    System.out.println("aca!");
+
                     List<String> errores = result.getFieldErrors()
                             .stream()
                             .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())

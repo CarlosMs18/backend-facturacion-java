@@ -6,7 +6,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "facturas")
@@ -24,7 +26,7 @@ public class Factura implements Serializable {
     @NotEmpty(message = "La observacion de la factura es obligatoria")
     private String observacion;
 
-    @NotNull(message = "no puede estar vacio")
+
     @Column(name = "create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
@@ -33,6 +35,31 @@ public class Factura implements Serializable {
     @JsonIgnoreProperties(value={"facturas", "hibernateLazyInitializer", "handler"}, allowSetters=true)
     @ManyToOne(fetch = FetchType.LAZY)
     private Cliente cliente;
+
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "factura_id")
+    private List<ItemFactura> items;
+
+
+
+
+    public Factura(){
+        items = new ArrayList<>();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createAt = new Date();
+    }
+
+    public List<ItemFactura> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemFactura> items) {
+        this.items = items;
+    }
 
     public Long getId() {
         return id;
@@ -74,5 +101,13 @@ public class Factura implements Serializable {
         this.cliente = cliente;
     }
 
+
+    public Double getTotal(){
+        Double total = 0.00;
+        for (ItemFactura item : items){
+            total += item.getImporte();
+        }
+        return total;
+    }
     private static final long serialVersionUID = 1L;
 }
